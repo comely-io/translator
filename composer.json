@@ -1,0 +1,26 @@
+{
+  "name": "comely-io/translator",
+  "description": "Translator for Comely Apps",
+  "type": "library",
+  "homepage": "https://github.com/comely-io/mailer",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Furqan A. Siddiqui",
+      "email": "hello@furqansiddiqui.com",
+      "homepage": "https://www.furqansiddiqui.com",
+      "role": "Author"
+    }
+  ],
+  "require": {
+    "php": "^7.1"
+  },
+  "autoload": {
+    "psr-4": {
+      "Comely\\Translator\\": [
+        "src"
+      ]
+    }
+  },
+  "minimum-stability": "dev"
+}
