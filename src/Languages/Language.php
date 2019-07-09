@@ -61,7 +61,6 @@ class Language implements \Serializable
         }
 
         // Load translations
-        $translations = [];
         $count = 0;
         foreach ($translator->load()->selected as $file) {
             $parse = Yaml::Parse($langDirectory->suffix($file . ".yml"))
@@ -71,7 +70,7 @@ class Language implements \Serializable
                 ->evalNulls(true)
                 ->generate();
 
-            array_push($translations, $parse);
+            $this->feed($parse);
             $count++;
             unset($parse);
         }
@@ -79,9 +78,6 @@ class Language implements \Serializable
         if (!$count) {
             throw new LanguageException('No translation files were loaded');
         }
-
-        // Feed translations
-        $this->feed($translations);
     }
 
     /**
