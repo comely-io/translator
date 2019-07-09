@@ -12,6 +12,7 @@
 
 namespace {
 
+    use Comely\Translator\Exception\TranslatorException;
     use Comely\Translator\Translator;
 
     if (!function_exists("__")) {
@@ -27,8 +28,10 @@ namespace {
         {
             try {
                 return Translator::getInstance()->translate($key, $lang);
-            } catch (Exception $e) {
-                return null;
+            } catch (TranslatorException $e) {
+                throw new RuntimeException(
+                    sprintf('[%s][%s] %s', get_class($e), $e->getCode(), $e->getMessage())
+                );
             }
         }
     }
