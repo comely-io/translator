@@ -103,11 +103,19 @@ class Language implements \Serializable
     public function translate(string $key): ?string
     {
         $key = strtolower($key);
-        if (!preg_match('/[\w\-\.]+/', $key)) {
+        if (!preg_match('/[\w\-.]+/', $key)) {
             throw new \InvalidArgumentException('Invalid translation key');
         }
 
         return $this->translations[$key] ?? null;
+    }
+
+    /**
+     * @return array
+     */
+    public function getAll(): array
+    {
+        return $this->translations;
     }
 
     /**
@@ -152,7 +160,7 @@ class Language implements \Serializable
         foreach ($translations as $key => $value) {
             // Validate key
             $key = trim(strtolower(sprintf('%s.%s', $parent ?? "", $key)), ".-_"); // Trim special chars from start/end
-            if (!preg_match('/^[a-z0-9\.\-\_]+$/', $key)) {
+            if (!preg_match('/^[a-z0-9.\-_]+$/', $key)) {
                 $this->compileError(sprintf('Invalid translation key in parent "%s"', $parent ?? "~"));
                 continue;
             }
@@ -186,7 +194,7 @@ class Language implements \Serializable
     public static function isValidLanguageName(string $in): string
     {
         $out = strtolower($in);
-        if (!preg_match('/^[a-z]+(\-[a-z]{2})?$/', $out)) {
+        if (!preg_match('/^[a-z]+(-[a-z]{2})?$/', $out)) {
             throw new \InvalidArgumentException('Bad language name');
         }
 
