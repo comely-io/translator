@@ -1,5 +1,5 @@
 <?php
-/**
+/*
  * This file is a part of "comely-io/translator" package.
  * https://github.com/comely-io/translator
  *
@@ -28,7 +28,7 @@ use Comely\Translator\Languages\Language;
 class CacheDirectory
 {
     /** @var Directory */
-    private $dir;
+    private Directory $dir;
 
     /**
      * CacheDirectory constructor.
@@ -37,9 +37,9 @@ class CacheDirectory
      */
     public function __construct(Directory $directory)
     {
-        if (!$directory->permissions()->read()) {
+        if (!$directory->permissions()->readable()) {
             throw new TranslatorCacheException('Translations cache directory is not readable');
-        } elseif (!$directory->permissions()->write()) {
+        } elseif (!$directory->permissions()->writable()) {
             throw new TranslatorCacheException('Translations cache directory is not writable');
         }
 
@@ -59,11 +59,11 @@ class CacheDirectory
         try {
             $cachedFile = $this->dir->file($cachedFilename);
             $cachedFileBytes = $cachedFile->read();
-        } catch (PathNotExistException $e) {
+        } catch (PathNotExistException) {
             return null;
-        } catch (PathPermissionException $e) {
+        } catch (PathPermissionException) {
             throw new TranslatorCacheException(sprintf('Cached language file "%s" is not readable', $cachedFilename));
-        } catch (PathException $e) {
+        } catch (PathException) {
             throw new TranslatorCacheException(sprintf('Failed to load cached language file "%s"', $cachedFilename));
         }
 
@@ -73,7 +73,7 @@ class CacheDirectory
                     'Comely\Translator\Languages\Language'
                 ]
             ]);
-        } catch (\Exception $e) {
+        } catch (\Exception) {
         }
 
         if (isset($language) && $language instanceof Language) {
@@ -83,7 +83,7 @@ class CacheDirectory
         // Attempt to delete file
         try {
             $this->dir->delete($cachedFilename);
-        } catch (PathException $e) {
+        } catch (PathException) {
             trigger_error(
                 sprintf('Failed to delete invalid cached language file "%s"', $cachedFilename),
                 E_USER_WARNING
@@ -105,7 +105,7 @@ class CacheDirectory
 
         try {
             $this->dir->write($cacheFilename, serialize($lang), false, true);
-        } catch (PathException $e) {
+        } catch (PathException) {
             throw new TranslatorCacheException(
                 sprintf('Failed to write compiled language cache file "%s"', $cacheFilename)
             );

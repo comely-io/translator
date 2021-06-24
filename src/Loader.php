@@ -1,5 +1,5 @@
 <?php
-/**
+/*
  * This file is a part of "comely-io/translator" package.
  * https://github.com/comely-io/translator
  *
@@ -23,15 +23,7 @@ namespace Comely\Translator;
 class Loader
 {
     /** @var array */
-    private $selection;
-
-    /**
-     * Loader constructor.
-     */
-    public function __construct()
-    {
-        $this->selection = [];
-    }
+    private array $selection = [];
 
     /**
      * @param string $prop

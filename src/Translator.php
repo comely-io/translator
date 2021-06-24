@@ -1,5 +1,5 @@
-<?php
-/**
+<?php /** @noinspection PhpUnusedPrivateFieldInspection */
+/*
  * This file is a part of "comely-io/translator" package.
  * https://github.com/comely-io/translator
  *
@@ -28,25 +28,25 @@ use Comely\Translator\Languages\Language;
 class Translator
 {
     /** string Version (Major.Minor.Release-Suffix) */
-    public const VERSION = "1.0.11";
+    public const VERSION = "2.0.0";
     /** int Version (Major * 10000 + Minor * 100 + Release) */
-    public const VERSION_ID = 10011;
+    public const VERSION_ID = 20000;
 
-    /** @var self */
-    private static $instance;
+    /** @var self |null */
+    private static ?self $instance = null;
 
     /** @var Directory */
-    private $directory;
+    private Directory $directory;
     /** @var null|CacheDirectory */
-    private $cache;
+    private ?CacheDirectory $cache = null;
     /** @var Loader */
-    private $loader;
+    private Loader $loader;
     /** @var Languages */
-    private $languages;
+    private Languages $languages;
     /** @var null|string */
-    private $current;
+    private ?string $current = null;
     /** @var null|string */
-    private $fallback;
+    private ?string $fallback = null;
 
     /**
      * @return Translator
@@ -83,7 +83,7 @@ class Translator
      */
     private function __construct(Directory $translationsDirectory)
     {
-        if (!$translationsDirectory->permissions()->read()) {
+        if (!$translationsDirectory->permissions()->readable()) {
             throw new TranslatorException('Translations directory is not readable');
         }
 
