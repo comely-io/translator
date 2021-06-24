@@ -1,5 +1,5 @@
 <?php
-/**
+/*
  * This file is a part of "comely-io/translator" package.
  * https://github.com/comely-io/translator
  *
@@ -23,19 +23,15 @@ use Comely\Translator\Languages\Language;
  */
 class Languages
 {
-    /** @var Translator */
-    private $translator;
     /** @var array */
-    private $langs;
+    private array $langs = [];
 
     /**
      * Languages constructor.
      * @param Translator $translator
      */
-    public function __construct(Translator $translator)
+    public function __construct(private Translator $translator)
     {
-        $this->translator = $translator;
-        $this->langs = [];
     }
 
     /**

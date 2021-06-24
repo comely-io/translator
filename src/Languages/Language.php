@@ -1,5 +1,5 @@
 <?php
-/**
+/*
  * This file is a part of "comely-io/translator" package.
  * https://github.com/comely-io/translator
  *
@@ -17,7 +17,6 @@ namespace Comely\Translator\Languages;
 use Comely\Filesystem\Exception\PathException;
 use Comely\Filesystem\Exception\PathNotExistException;
 use Comely\Translator\Exception\LanguageException;
-use Comely\Translator\Exception\TranslatorCacheException;
 use Comely\Translator\Translator;
 use Comely\Yaml\Yaml;
 
@@ -25,14 +24,14 @@ use Comely\Yaml\Yaml;
  * Class Language
  * @package Comely\Translator\Languages
  */
-class Language implements \Serializable
+class Language
 {
     /** @var string */
-    private $name;
+    private string $name;
     /** @var string */
-    private $group;
+    private string $group;
     /** @var array */
-    private $translations;
+    private array $translations = [];
 
     /**
      * Language constructor.
@@ -45,18 +44,17 @@ class Language implements \Serializable
     {
         $this->name = self::isValidLanguageName($lang);
         $this->group = $translator->load()->cacheId;
-        $this->translations = [];
 
         // Load language directory
         try {
             $langDirectory = $translator->directory->dir($this->name, false);
-        } catch (PathNotExistException $e) {
+        } catch (PathNotExistException) {
             throw new LanguageException(sprintf('Language directory "%s" not found', $this->name));
-        } catch (PathException $e) {
+        } catch (PathException) {
             throw new LanguageException(sprintf('Failed to load language "%s" directory', $this->name));
         }
 
-        if (!$langDirectory->permissions()->read()) {
+        if (!$langDirectory->permissions()->readable()) {
             throw new LanguageException(sprintf('Language directory "%s" is not readable', $this->name));
         }
 
@@ -64,10 +62,7 @@ class Language implements \Serializable
         $count = 0;
         foreach ($translator->load()->selected as $file) {
             $parse = Yaml::Parse($langDirectory->suffix($file . ".yml"))
-                ->eol("\n")
-                ->encoding("UTF-8")
-                ->evalBooleans(false)
-                ->evalNulls(true)
+                ->options(eolChar: "\n", evaluateBooleans: false, evaluateNulls: true, mbEncoding: "UTF-8")
                 ->generate();
 
             $this->feed($parse);
@@ -119,36 +114,25 @@ class Language implements \Serializable
     }
 
     /**
-     * @return string
+     * @return array
      */
-    public function serialize(): string
+    public function __serialize(): array
     {
-        return base64_encode(serialize([
-            $this->name,
-            $this->group,
-            $this->translations
-        ]));
+        return [
+            "name" => $this->name,
+            "group" => $this->group,
+            "translations" => $this->translations
+        ];
     }
 
     /**
-     * @param string $serialized
-     * @throws TranslatorCacheException
+     * @param array $data
      */
-    public function unserialize($serialized)
+    public function __unserialize(array $data): void
     {
-        $unSerialized = unserialize(base64_decode($serialized));
-        if (!$unSerialized || !is_array($unSerialized)) {
-            throw new TranslatorCacheException('Failed to unserialize cached language file');
-        }
-
-        list($name, $group, $translations) = $unSerialized;
-        if (!is_string($name) || !is_string($group) || !is_array($translations)) {
-            throw new TranslatorCacheException('Invalid Language instance data');
-        }
-
-        $this->name = $name;
-        $this->group = $group;
-        $this->translations = $translations;
+        $this->name = $data["name"];
+        $this->group = $data["group"];
+        $this->translations = $data["translations"];
     }
 
     /**
